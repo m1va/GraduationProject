@@ -1,0 +1,11 @@
+{% extends 'DiagnosticSystem/base.html' %}
+
+{% block content %}
+<ul class="list-articles">
+	{% for d in diagnostics %}
+			<li><h2>{{ d.name }}</h2>
+			<div class="clear"></div>
+			</li>
+	{% endfor %}
+</ul>
+{% endblock %}
