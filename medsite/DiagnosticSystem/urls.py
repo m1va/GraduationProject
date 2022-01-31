@@ -4,9 +4,10 @@ from .views import *
 
 urlpatterns = [
     path('', index, name='home'),
+    path('start_consultation/', StartConsultation.as_view(), name='start_consultation'),
     path('add_diagnostic/', AddDiagnostic.as_view(), name='add_diagnostic'),
     path('add_employee/', add_employee, name='add_employee'),
-    path('add_question/', add_question, name='add_question'),
+    path('add_question/', AddQuestion.as_view(), name='add_question'),
     path('add_disease/', add_disease, name='add_disease'),
     path('add_cabinet/', add_cabinet, name='add_cabinet'),
     path('add_disease-diagnostic/', AddDiseaseDiagnostic.as_view(), name='add_disease-diagnostic'),

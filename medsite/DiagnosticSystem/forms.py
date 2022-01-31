@@ -68,8 +68,6 @@ class AddQuestionForm(forms.ModelForm):
     #  }
 
 
-
-
 class AddDiseaseForm(forms.ModelForm):
     class Meta:
         model = Disease
@@ -93,3 +91,8 @@ class SetPriceForDiagnosticForm(forms.ModelForm):
         model = Price
         fields = '__all__'
 
+
+class PatientAnswersForm(forms.ModelForm):
+    class Meta:
+        model = PatientAnswers
+        fields = '__all__'

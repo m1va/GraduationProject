@@ -6,7 +6,8 @@ from django.views.generic import ListView, CreateView
 from .forms import *
 from .models import *
 
-sidebar = [{'title': "Добавить врача", 'url_name': 'add_employee'},
+sidebar = [{'title': "Начать консультацию", 'url_name': 'start_consultation'},
+           {'title': "Добавить врача", 'url_name': 'add_employee'},
            {'title': "Добавить диагностику", 'url_name': 'add_diagnostic'},
            {'title': "Добавить вопрос для диагностики", 'url_name': 'add_question'},
            {'title': "Добавить кабинет", 'url_name': 'add_cabinet'},
@@ -29,6 +30,35 @@ def index(request):
     }
 
     return render(request, 'DiagnosticSystem/index.html', context=context)
+
+
+class StartConsultation(CreateView):
+    form_class = PatientAnswersForm
+    template_name = 'DiagnosticSystem/start_consultation.html'
+    success_url = reverse_lazy('start_consultation')
+
+    def get_context_data(self, *, object_list=None, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['menu'] = menu
+        context['sidebar'] = sidebar
+        context['title'] = 'Диагностика'
+        context['questions'] = self.get_queryset()
+        return context
+
+    def get_queryset(self):
+        return Questions.objects.all()
+
+
+# def start_consultation(request):
+#     questions = Questions.objects.all()
+#     context = {
+#         'menu': menu,
+#         'title': 'Диагностика',
+#         'sidebar': sidebar,
+#         'questions': questions
+#     }
+#
+#     return render(request, 'DiagnosticSystem/start_consultation.html', context=context)
 
 
 class AddDiagnostic(CreateView):
@@ -69,17 +99,29 @@ def add_employee(request):
                   {'form': form, 'title': 'Добавление врача', 'sidebar': sidebar})
 
 
-def add_question(request):
-    if request.method == 'POST':
-        form = AddQuestionForm(request.POST)
-        if form.is_valid():
-            form.save()
-            return redirect('add_question')
-    else:
-        form = AddQuestionForm()
+# def add_question(request):
+#     if request.method == 'POST':
+#         form = AddQuestionForm(request.POST)
+#         if form.is_valid():
+#             form.save()
+#             return redirect('add_question')
+#     else:
+#         form = AddQuestionForm()
+#
+#     return render(request, 'DiagnosticSystem/add_question.html',
+#                   {'form': form, 'title': 'Добавление вопроса', 'sidebar': sidebar})
 
-    return render(request, 'DiagnosticSystem/add_question.html',
-                  {'form': form, 'title': 'Добавление вопроса', 'sidebar': sidebar})
+
+class AddQuestion(CreateView):
+    form_class = AddQuestionForm
+    template_name = 'DiagnosticSystem/add_question.html'
+    success_url = reverse_lazy('add_question')
+
+    def get_context_data(self, *, object_list=None, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['sidebar'] = sidebar
+        context['title'] = 'Добавление вопроса'
+        return context
 
 
 def add_disease(request):

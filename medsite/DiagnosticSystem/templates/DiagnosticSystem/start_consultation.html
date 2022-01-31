@@ -1,0 +1,32 @@
+{% extends 'DiagnosticSystem/base.html' %}
+
+{% block content %}
+<h1>{{ title }}</h1>
+
+<!--<form action="{% url 'start_consultation' %}" method="post">-->
+    {% for question in questions %}
+    <h3>{{ question }}</h3>
+    {% for answer in question.answers_set.all %}
+<!--    <div class="myradio">-->
+    <input type="radio" name="answerON{{ question }}" id="answerON{{ question }}{{ forloop.counter }}" value="{{ answer.id }}">
+    <label for="answerON{{ question }}{{ forloop.counter }}">{{ answer.id }}</label><br>
+<!--    </div>-->
+    {% endfor %}
+    {% endfor %}
+    <button type="submit">Добавить</button>
+<!--</form>-->
+
+
+<!-- Рабочий вывод ответов для каждого вопроса -->
+<!--{% for question in questions %}-->
+<!--<h1>{{ question }}</h1>-->
+<!--<ul>-->
+<!--    {% for answer in question.answers_set.all %}-->
+<!--    <li>{{ answer }}</li>-->
+<!--    {% endfor %}-->
+<!--</ul>-->
+<!--{% endfor %}-->
+
+
+
+{% endblock %}

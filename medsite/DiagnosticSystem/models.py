@@ -54,7 +54,7 @@ class Price(models.Model):
 class Patient(models.Model):
     surname = models.CharField(max_length=50, verbose_name='Фамилия')
     name = models.CharField(max_length=50, verbose_name='Имя')
-    patronymic = models.CharField(max_length=50,verbose_name='Отчество')
+    patronymic = models.CharField(max_length=50, verbose_name='Отчество')
     birthday_date = models.DateField(verbose_name='Дата рождения')
 
     def __str__(self):
@@ -68,10 +68,16 @@ class Patient(models.Model):
 class Questions(models.Model):
     title = models.CharField(max_length=30, verbose_name='Вопрос')
 
+    def __str__(self):
+        return self.title
+
 
 class Answers(models.Model):
     title = models.CharField(max_length=30, verbose_name='Ответ')
     question = models.ForeignKey('Questions', on_delete=models.PROTECT, verbose_name='Вопрос')
+
+    def __str__(self):
+        return self.title
 
 
 class PatientAnswers(models.Model):
