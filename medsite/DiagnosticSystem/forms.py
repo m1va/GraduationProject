@@ -2,7 +2,11 @@ from django import forms
 from django.core.exceptions import ValidationError
 from django.forms import ModelForm
 from .models import *
+from django.contrib import messages
 
+import re
+
+regex = "^[а-яА-ЯёЁ-]+$"
 
 class AddDiagnosticForm(forms.ModelForm):
     # name = forms.CharField(max_length=50, label="Название")
@@ -15,6 +19,22 @@ class AddDiagnosticForm(forms.ModelForm):
         widgets = {
             'name': forms.TextInput(attrs={'class': 'form-input'})
         }
+
+
+    # Валидатор диагностики
+    def clean_name(self):
+        diagnostic = self.cleaned_data['name']
+        if len(diagnostic) > 64:
+            raise ValidationError('Ошибка. Длина превышает 64 символа!')
+        elif len(diagnostic) < 3:
+            raise ValidationError('Ошибка. Длина меньше 3-х символов!')
+        elif any(map(str.isdigit, diagnostic)):
+            raise ValidationError('Ошибка. Присутствуют цифры!')
+        elif not re.match(regex, diagnostic):
+            raise ValidationError('Ошибка. Недопустимые символы!')
+
+        return diagnostic
+
 
 
 class AddDiseaseDiagnosticForm(forms.ModelForm):

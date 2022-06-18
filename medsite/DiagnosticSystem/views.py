@@ -2,6 +2,7 @@ from django.http import HttpResponse
 from django.shortcuts import render, redirect
 from django.urls import reverse_lazy
 from django.views.generic import ListView, CreateView
+from django.contrib.messages.views import SuccessMessageMixin
 
 from .forms import *
 from .models import *
@@ -61,10 +62,12 @@ class StartConsultation(CreateView):
 #     return render(request, 'DiagnosticSystem/start_consultation.html', context=context)
 
 
-class AddDiagnostic(CreateView):
+class AddDiagnostic(SuccessMessageMixin, CreateView):
     form_class = AddDiagnosticForm
     template_name = 'DiagnosticSystem/add_diagnostic.html'
     success_url = reverse_lazy('add_diagnostic')
+    success_message = "Диагностика добавлена!"
+
 
     def get_context_data(self, *, object_list=None, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -72,6 +75,19 @@ class AddDiagnostic(CreateView):
         context['title'] = 'Добавление диагностики'
         return context
 
+
+# def add_diagnostic(request):
+#     if request.method == 'POST':
+#         form = AddDiagnosticForm(request.POST)
+#         if form.is_valid():
+#             # print(form.cleaned_data)
+#             form.save()
+#             return redirect('add_diagnostic')
+#     else:
+#         form = AddDiagnosticForm()
+#
+#     return render(request, 'DiagnosticSystem/add_diagnostic.html',
+#                   {'form': form, 'title': 'Добавление диагностики', 'sidebar': sidebar})
 
 class AddDiseaseDiagnostic(CreateView):
     form_class = AddDiseaseDiagnosticForm

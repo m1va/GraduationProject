@@ -11,7 +11,7 @@ class Disease(models.Model):
 
 
 class Diagnostic(models.Model):
-    name = models.CharField(max_length=50, verbose_name='Диагностика')
+    name = models.CharField(max_length=128, verbose_name='Диагностика')
 
     def __str__(self):
         return self.name
