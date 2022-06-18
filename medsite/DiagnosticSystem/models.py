@@ -3,6 +3,8 @@ from django.db import models
 
 class Disease(models.Model):
     name = models.CharField(max_length=50, verbose_name='Заболевание')
+    membership_chart = models.ForeignKey('MembershipChart', on_delete=models.PROTECT,
+                                         verbose_name='График принадлежности', blank=True, null=True)
 
     def __str__(self):
         return self.name
@@ -75,6 +77,8 @@ class Questions(models.Model):
 class Answers(models.Model):
     title = models.CharField(max_length=30, verbose_name='Ответ')
     question = models.ForeignKey('Questions', on_delete=models.PROTECT, verbose_name='Вопрос')
+    disease = models.ForeignKey('Disease', on_delete=models.PROTECT, verbose_name='Заболевание')
+    number_of_points = models.PositiveSmallIntegerField(verbose_name='Количество баллов', blank=True, null=True)
 
     def __str__(self):
         return self.title
@@ -93,3 +97,17 @@ class DiagnosticList(models.Model):
     diagnostic = models.ForeignKey('Diagnostic', on_delete=models.PROTECT, verbose_name='Диагностика')
     employee = models.ForeignKey('Employee', on_delete=models.PROTECT, verbose_name='Сотрудник')
     diagnostic_date = models.DateTimeField(auto_now_add=True, primary_key=True, verbose_name='Дата диагностирования')
+
+
+class MembershipChart(models.Model):
+    membership_id = models.BigIntegerField(primary_key=True, verbose_name='График принадлежности №')
+
+
+class MembershipFunction(models.Model):
+    membership_chart = models.ForeignKey('MembershipChart', on_delete=models.PROTECT,
+                                         verbose_name='График принадлежности')
+    function_name = models.CharField(max_length=50, verbose_name='Название функции')
+    a = models.PositiveSmallIntegerField()
+    b = models.PositiveSmallIntegerField()
+    c = models.PositiveSmallIntegerField()
+    d = models.PositiveSmallIntegerField()

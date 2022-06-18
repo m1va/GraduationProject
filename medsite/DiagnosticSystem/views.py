@@ -176,15 +176,15 @@ class SetPriceForDiagnostic(CreateView):
 
 
 class EmployeesList(ListView):
-    model = Patient
+    model = Employee
     template_name = 'DiagnosticSystem/employees_list.html'
     context_object_name = 'employees'
-    extra_context = {'title': 'Список сотрудников'}
+    # extra_context = {'title': 'Список сотрудников'}
 
     def get_context_data(self, *, object_list=None, **kwargs):
         context = super().get_context_data(**kwargs)
         context['sidebar'] = sidebar
-        context['title'] = 'Добавление сотрудника'
+        context['title'] = 'Список сотрудников'
         return context
 
 

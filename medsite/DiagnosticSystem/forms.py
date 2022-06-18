@@ -41,13 +41,13 @@ class AddEmployeeForm(forms.ModelForm):
             'surname': forms.TextInput(attrs={'class': 'form-input'})
         }
 
-    # Валидатор для примера
-    def clean_surname(self):
-        surname = self.cleaned_data['surname']
-        if len(surname) > 5:
-            raise ValidationError('Длина превышает 5 символов')
-
-        return surname
+    # # Валидатор для примера
+    # def clean_surname(self):
+    #     surname = self.cleaned_data['surname']
+    #     if len(surname) > 5:
+    #         raise ValidationError('Длина превышает 5 символов')
+    #
+    #     return surname
 
 
 # class AddEmployeeForm(forms.Form):

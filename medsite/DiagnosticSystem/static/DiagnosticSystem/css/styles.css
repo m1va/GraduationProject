@@ -5,6 +5,7 @@ html, body {
 	height: 100%;
 	width: 100%;
 	color: #444;
+	background-color: #fdf5e6;
 }
 
 a {
@@ -76,8 +77,8 @@ ul.list-articles li {
 .clear {clear: both;}
 
 .header {
-	background: #3F4137;
-	height: 60px;
+	background: #453100;
+	height: 60px;#3F4137
 }
 
 .logo {
@@ -103,7 +104,7 @@ ul.mainmenu li.logo {margin: 0;}
 ul.mainmenu li.last {float: right;}
 
 ul.mainmenu li a {
-	color: #fdc073;
+	color: #fffb82e8;
 	text-decoration: none;
 }
 ul.mainmenu li a:hover {
@@ -165,6 +166,7 @@ div.button {
 	background: #eee;
 	border-right: 1px solid #ccc;
 	min-height: 100%;
+	background-color: #f5f1e4;
 }
 .left-chapters ul {
 	width: 230px;
@@ -356,7 +358,7 @@ ul.lang-list li a:hover {color: #fdc073;}
 #footer {
 	box-sizing: border-box;
 
-	background: #3F4137;
+	background: #453100;
 	padding: 5px;
 	color: #aaa;
 	font-size: 14px;
