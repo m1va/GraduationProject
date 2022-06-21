@@ -18,12 +18,13 @@
 			<ul id="mainmenu" class="mainmenu">
 <!--			<li class="logo"><a href="{% url 'home' %}"><div class="logo"></div></a></li>-->
 {% for m in menu %}
-	{% if not forloop.last %}
 			<li><a href="#">{{m.title}}</a></li>
-	{% else %}
-			<li class="last"><a href="#">{{m.title}}</a></li>
-	{% endif %}
 {% endfor %}
+				{% if request.user.is_authenticated %}
+				<li class="last"> Вы авторизованы как "{{ user.username }}" | <a href="{% url 'logout' %}">Сменить пользователя</a></li>
+				{% else %}
+				<li class="last"><a href="{% url 'register' %}">Регистрация</a> | <a href="{% url 'login' %}">Авторизация</a></li>
+				{% endif %}
 			</ul>
 			<div class="clear"></div>
 		</div>

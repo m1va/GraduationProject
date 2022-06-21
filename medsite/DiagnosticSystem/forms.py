@@ -1,4 +1,6 @@
 from django import forms
+from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
+from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError
 from django.forms import ModelForm
 from .models import *
@@ -7,6 +9,7 @@ from django.contrib import messages
 import re
 
 regex = "^[а-яА-ЯёЁ-]+$"
+
 
 class AddDiagnosticForm(forms.ModelForm):
     # name = forms.CharField(max_length=50, label="Название")
@@ -19,7 +22,6 @@ class AddDiagnosticForm(forms.ModelForm):
         widgets = {
             'name': forms.TextInput(attrs={'class': 'form-input'})
         }
-
 
     # Валидатор диагностики
     def clean_name(self):
@@ -34,7 +36,6 @@ class AddDiagnosticForm(forms.ModelForm):
             raise ValidationError('Ошибка. Недопустимые символы!')
 
         return diagnostic
-
 
 
 class AddDiseaseDiagnosticForm(forms.ModelForm):
@@ -116,3 +117,22 @@ class PatientAnswersForm(forms.ModelForm):
     class Meta:
         model = PatientAnswers
         fields = '__all__'
+
+
+class RegisterUserForm(UserCreationForm):
+    username = forms.CharField(label='Имя пользователя', widget=forms.TextInput(attrs={'class': 'form_input'}))
+    first_name = forms.CharField(label='Имя', widget=forms.TextInput(attrs={'class': 'form_input'}))
+    last_name = forms.CharField(label='Фамилия', widget=forms.TextInput(attrs={'class': 'form_input'}))
+    email = forms.EmailField(label='Электронная почта', widget=forms.EmailInput(attrs={'class': 'form_input'}))
+    password1 = forms.CharField(label='Пароль', widget=forms.TextInput(attrs={'class': 'form_input'}))
+    password2 = forms.CharField(label='Повторите пароль', widget=forms.TextInput(attrs={'class': 'form_input'}))
+
+    class Meta:
+        model = User
+        fields = ('username', 'first_name', 'last_name', 'email', 'password1', 'password2')
+
+
+class LoginUserForm(AuthenticationForm):
+    username = forms.CharField(label='Имя пользователя', widget=forms.TextInput(attrs={'class': 'form_input'}))
+    password = forms.CharField(label='Пароль', widget=forms.PasswordInput(attrs={'class': 'form_input'}))
+

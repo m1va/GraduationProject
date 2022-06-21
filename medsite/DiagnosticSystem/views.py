@@ -1,5 +1,8 @@
+from django.contrib.auth import logout, login
+from django.contrib.auth.views import LoginView
 from django.http import HttpResponse
 from django.shortcuts import render, redirect
+from django.template.context_processors import request
 from django.urls import reverse_lazy
 from django.views.generic import ListView, CreateView
 from django.contrib.messages.views import SuccessMessageMixin
@@ -18,7 +21,7 @@ sidebar = [{'title': "Начать консультацию", 'url_name': 'start
            {'title': "Просмотреть список врачей", 'url_name': 'employees_list'},
            {'title': "Просмотреть список диагностик", 'url_name': 'diagnostic_list'}
            ]
-menu = ['Главная страница', 'Диагностика', 'Войти']
+menu = ['Главная страница', 'Диагностика']
 
 
 def index(request):
@@ -68,9 +71,9 @@ class AddDiagnostic(SuccessMessageMixin, CreateView):
     success_url = reverse_lazy('add_diagnostic')
     success_message = "Диагностика добавлена!"
 
-
     def get_context_data(self, *, object_list=None, **kwargs):
         context = super().get_context_data(**kwargs)
+        context['menu'] = menu
         context['sidebar'] = sidebar
         context['title'] = 'Добавление диагностики'
         return context
@@ -96,6 +99,7 @@ class AddDiseaseDiagnostic(CreateView):
 
     def get_context_data(self, *, object_list=None, **kwargs):
         context = super().get_context_data(**kwargs)
+        context['menu'] = menu
         context['sidebar'] = sidebar
         context['title'] = 'Связать заболевание с диагностикой'
         return context
@@ -112,7 +116,7 @@ def add_employee(request):
         form = AddEmployeeForm()
 
     return render(request, 'DiagnosticSystem/add_employee.html',
-                  {'form': form, 'title': 'Добавление врача', 'sidebar': sidebar})
+                  {'menu': menu, 'form': form, 'title': 'Добавление врача', 'sidebar': sidebar})
 
 
 # def add_question(request):
@@ -135,6 +139,7 @@ class AddQuestion(CreateView):
 
     def get_context_data(self, *, object_list=None, **kwargs):
         context = super().get_context_data(**kwargs)
+        context['menu'] = menu
         context['sidebar'] = sidebar
         context['title'] = 'Добавление вопроса'
         return context
@@ -174,6 +179,7 @@ class AddSpeciality(CreateView):
 
     def get_context_data(self, *, object_list=None, **kwargs):
         context = super().get_context_data(**kwargs)
+        context['menu'] = menu
         context['sidebar'] = sidebar
         context['title'] = 'Добавление специальности'
         return context
@@ -195,10 +201,12 @@ class EmployeesList(ListView):
     model = Employee
     template_name = 'DiagnosticSystem/employees_list.html'
     context_object_name = 'employees'
+
     # extra_context = {'title': 'Список сотрудников'}
 
     def get_context_data(self, *, object_list=None, **kwargs):
         context = super().get_context_data(**kwargs)
+        context['menu'] = menu
         context['sidebar'] = sidebar
         context['title'] = 'Список сотрудников'
         return context
@@ -219,12 +227,50 @@ class DiagnosticList(ListView):
 
     def get_context_data(self, *, object_list=None, **kwargs):
         context = super().get_context_data(**kwargs)
+        context['menu'] = menu
         context['sidebar'] = sidebar
         context['title'] = 'Добавление диагностики'
         return context
+
 
 # def diagnostic_list(request):
 #     Diagnostics = Diagnostic.objects.all()
 #
 #     return render(request, 'DiagnosticSystem/diagnostic_list.html',
 #                   {'diagnostics': Diagnostics, 'title': 'Список диагностик', 'sidebar': sidebar})
+
+
+class RegisterUser(CreateView):
+    form_class = RegisterUserForm
+    template_name = 'DiagnosticSystem/register.html'
+    success_url = reverse_lazy('login')
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['title'] = 'Регистрация на сайте'
+        return context
+
+    def form_valid(self, form):
+        user = form.save()
+        login(self.request, user)
+        return redirect('home')
+
+
+class LoginUser(LoginView):
+    form_class = AuthenticationForm
+    template_name = 'DiagnosticSystem/login.html'
+
+    # success_url = reverse_lazy('home')
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['title'] = 'Авторизация'
+        return context
+
+    def get_success_url(self):
+        return reverse_lazy('home')
+
+
+def logout_user(request):
+    logout(request)
+    return redirect('home')

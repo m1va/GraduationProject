@@ -14,5 +14,8 @@ urlpatterns = [
     path('set_price_for_diagnostic/', SetPriceForDiagnostic.as_view(), name='set_price_for_diagnostic'),
     path('add_speciality/', AddSpeciality.as_view(), name='add_speciality'),
     path('employees_list/', EmployeesList.as_view(), name='employees_list'),
-    path('diagnostic_list/', DiagnosticList.as_view(), name='diagnostic_list')
+    path('diagnostic_list/', DiagnosticList.as_view(), name='diagnostic_list'),
+    path('login/', LoginUser.as_view(), name='login'),
+    path('logout/', logout_user, name='logout'),
+    path('register/', RegisterUser.as_view(), name='register')
 ]
