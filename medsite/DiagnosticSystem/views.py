@@ -247,6 +247,7 @@ class RegisterUser(CreateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
+        context['menu'] = menu
         context['title'] = 'Регистрация на сайте'
         return context
 
@@ -264,6 +265,7 @@ class LoginUser(LoginView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
+        context['menu'] = menu
         context['title'] = 'Авторизация'
         return context
 

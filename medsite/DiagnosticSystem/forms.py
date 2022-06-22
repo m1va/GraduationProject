@@ -112,7 +112,6 @@ class SetPriceForDiagnosticForm(forms.ModelForm):
         model = Price
         fields = '__all__'
 
-
 class PatientAnswersForm(forms.ModelForm):
     class Meta:
         model = PatientAnswers
