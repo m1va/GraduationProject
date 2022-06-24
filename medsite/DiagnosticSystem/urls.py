@@ -17,5 +17,6 @@ urlpatterns = [
     path('diagnostic_list/', DiagnosticList.as_view(), name='diagnostic_list'),
     path('login/', LoginUser.as_view(), name='login'),
     path('logout/', logout_user, name='logout'),
-    path('register/', RegisterUser.as_view(), name='register')
+    path('register/', RegisterUser.as_view(), name='register'),
+    path('consultation_result/', consultation_result, name='consultation_result')
 ]

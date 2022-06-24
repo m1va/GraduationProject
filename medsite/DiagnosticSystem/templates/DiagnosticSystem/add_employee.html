@@ -5,7 +5,11 @@
 
 <form action="{% url 'add_employee' %}" method="post">
     {% csrf_token %}
-    {{ form.as_p }}
+<!--    {{ form.as_p }}-->
+    <table>
+    {{ form.as_table }}
+    </table>
+<!--    <td></td>-->
     <button type="submit">Добавить</button>
 </form>
 

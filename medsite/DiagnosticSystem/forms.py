@@ -59,7 +59,9 @@ class AddEmployeeForm(forms.ModelForm):
         model = Employee
         fields = '__all__'
         widgets = {
-            'surname': forms.TextInput(attrs={'class': 'form-input'})
+            'surname': forms.TextInput(attrs={'class': 'form-input'}),
+            'name': forms.TextInput(attrs={'class': 'form-input'}),
+            'patronymic': forms.TextInput(attrs={'class': 'form-input'})
         }
 
     # # Валидатор для примера

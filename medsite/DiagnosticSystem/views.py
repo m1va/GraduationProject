@@ -5,7 +5,6 @@ from django.shortcuts import render, redirect
 from django.template.context_processors import request
 from django.urls import reverse_lazy
 from django.views.generic import ListView, CreateView
-from django.contrib.messages.views import SuccessMessageMixin
 
 from .forms import *
 from .models import *
@@ -65,7 +64,7 @@ class StartConsultation(CreateView):
 #     return render(request, 'DiagnosticSystem/start_consultation.html', context=context)
 
 
-class AddDiagnostic(SuccessMessageMixin, CreateView):
+class AddDiagnostic(CreateView):
     form_class = AddDiagnosticForm
     template_name = 'DiagnosticSystem/add_diagnostic.html'
     success_url = reverse_lazy('add_diagnostic')
@@ -192,6 +191,7 @@ class SetPriceForDiagnostic(CreateView):
 
     def get_context_data(self, *, object_list=None, **kwargs):
         context = super().get_context_data(**kwargs)
+        context['menu'] = menu
         context['sidebar'] = sidebar
         context['title'] = 'Установить цену на диагностику'
         return context
@@ -247,6 +247,7 @@ class RegisterUser(CreateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
+        context['menu'] = menu
         context['title'] = 'Регистрация на сайте'
         return context
 
@@ -264,6 +265,7 @@ class LoginUser(LoginView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
+        context['menu'] = menu
         context['title'] = 'Авторизация'
         return context
 
@@ -274,3 +276,13 @@ class LoginUser(LoginView):
 def logout_user(request):
     logout(request)
     return redirect('home')
+
+
+def consultation_result(request):
+    context = {
+        'menu': menu,
+        'title': 'Результат диагностики',
+        'sidebar': sidebar,
+    }
+
+    return render(request, 'DiagnosticSystem/consultation_result.html', context=context)

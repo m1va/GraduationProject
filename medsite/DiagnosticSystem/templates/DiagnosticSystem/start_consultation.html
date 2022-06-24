@@ -9,11 +9,11 @@
     {% for answer in question.answers_set.all %}
 <!--    <div class="myradio">-->
     <input type="radio" name="answerON{{ question }}" id="answerON{{ question }}{{ forloop.counter }}" value="{{ answer.id }}">
-    <label for="answerON{{ question }}{{ forloop.counter }}">{{ answer.id }}</label><br>
+    {{ answer.title }} <label for="answerON{{ question }}{{ forloop.counter }}"></label><br>
 <!--    </div>-->
     {% endfor %}
     {% endfor %}
-    <button type="submit">Добавить</button>
+    <button type="submit">Ответить</button>
 <!--</form>-->
 
 
