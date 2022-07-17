@@ -3,18 +3,19 @@
 {% block content %}
 <h1>{{ title }}</h1>
 
-<!--<form action="{% url 'start_consultation' %}" method="post">-->
+<form action="{% url 'start_consultation' question.id %}" method="post">
+    {% csrf_token %}
     {% for question in questions %}
     <h3>{{ question }}</h3>
     {% for answer in question.answers_set.all %}
-<!--    <div class="myradio">-->
+    <div class="myradio">
     <input type="radio" name="answerON{{ question }}" id="answerON{{ question }}{{ forloop.counter }}" value="{{ answer.id }}">
     {{ answer.title }} <label for="answerON{{ question }}{{ forloop.counter }}"></label><br>
-<!--    </div>-->
+    </div>
     {% endfor %}
     {% endfor %}
     <button type="submit">Ответить</button>
-<!--</form>-->
+</form>
 
 
 <!-- Рабочий вывод ответов для каждого вопроса -->

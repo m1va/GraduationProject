@@ -38,6 +38,16 @@ class AddDiagnosticForm(forms.ModelForm):
         return diagnostic
 
 
+# class AddDiagnosticTest(forms.ModelForm):
+#     diagnostic = forms.CharField(label='Диагностика', widget=forms.TextInput(attrs={'class': 'form_input'})),
+#     # disease = forms.CharField(label='Заболевание', widget=forms.TextInput(attrs={'class': 'form_input'}))
+#     disease = forms.ModelChoiceField(label="Для заболевания", queryset=Disease.objects.all())
+#
+#     class Meta:
+#         model = Diagnostic
+#         fields = '__all__'
+
+
 class AddDiseaseDiagnosticForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -137,4 +147,3 @@ class RegisterUserForm(UserCreationForm):
 class LoginUserForm(AuthenticationForm):
     username = forms.CharField(label='Имя пользователя', widget=forms.TextInput(attrs={'class': 'form_input'}))
     password = forms.CharField(label='Пароль', widget=forms.PasswordInput(attrs={'class': 'form_input'}))
-

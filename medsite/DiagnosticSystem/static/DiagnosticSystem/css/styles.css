@@ -375,12 +375,6 @@ ul.lang-list li a:hover {color: #fdc073;}
     width: 250px;
     font-size: 16px;
 }
-label {float:left;}
-
-
-td {
-    padding: 10px;
-}
 
 .form-label {
     display: inline-block;

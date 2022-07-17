@@ -20,7 +20,37 @@ sidebar = [{'title': "Начать консультацию", 'url_name': 'start
            {'title': "Просмотреть список врачей", 'url_name': 'employees_list'},
            {'title': "Просмотреть список диагностик", 'url_name': 'diagnostic_list'}
            ]
-menu = ['Главная страница', 'Диагностика']
+menu = [{'title': "Главная страница", 'url_name': 'home'},
+        {'title': "Диагностика", 'url_name': 'home'}
+        ]
+
+
+def function(x, a, b, c, d):
+    if x <= a:
+        coef = 0
+    elif a <= x <= b:
+        coef = x - a / b - a
+    elif b <= x <= c:
+        coef = 1
+    elif c <= x <= d:
+        coef = d - x / d - c
+    elif d <= x:
+        coef = 0
+
+    return coef
+
+
+# def result(request):
+#     context = {
+#         'menu': menu,
+#         'title': 'Диагностика',
+#         'sidebar': sidebar
+#     }
+#
+#     if request.method == 'POST':
+#
+#
+#     return render(request, 'DiagnosticSystem/index.html', context=context)
 
 
 def index(request):
