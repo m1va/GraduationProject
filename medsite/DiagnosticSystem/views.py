@@ -1,10 +1,13 @@
 from django.contrib.auth import logout, login
 from django.contrib.auth.views import LoginView
 from django.http import HttpResponse
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.template.context_processors import request
 from django.urls import reverse_lazy
 from django.views.generic import ListView, CreateView
+from django.utils import timezone
+
+from .models import Questions, Answers, PatientAnswers
 
 from .forms import *
 from .models import *
@@ -65,10 +68,62 @@ def index(request):
     return render(request, 'DiagnosticSystem/index.html', context=context)
 
 
+def vote(request):
+    print(request.user.id)
+    patient = Patient.objects.get(pk=request.user.id)
+    questions = Questions.objects.all()
+    selected_answers = []
+    print('кол-во вопросов: ', questions.count())
+    try:
+        print(questions, 'до POST')
+        for question in questions:
+            selected_answers.append(question.answers_set.get(pk=request.POST['answer_for_question' + str(question.id)]))
+            print(selected_answers, 'после POST')
+    except (KeyError, Answers.DoesNotExist):
+        # Redisplay the question voting form.
+        return render(request, 'DiagnosticSystem/start_consultation.html', {
+            'menu': menu,
+            'sidebar': sidebar,
+            'title': 'Диагностика',
+            'questions': questions,
+            'error_message': "You didn't select a choice."
+        })
+    else:
+        for answer in selected_answers:
+            print(answer.question.id)
+            PatientAnswers.objects.create(answer=answer, patient=patient, question=answer.question,
+                                          answer_date=timezone.now())
+        return render(request, 'DiagnosticSystem/consultation_result.html')
+
+
+# def vote(request):
+#     questions = Questions.objects.all()
+#     print('кол-во вопросов: ', questions.count())
+#     try:
+#         print(questions, 'до POST')
+#         for question in questions:
+#             # key = str('answerFORquestion№' + str(i))
+#             # print(key)
+#             selected_answer = question.answers_set.get(pk=request.POST['answer_for_question' + str(question.id)])
+#             print(selected_answer, 'после POST')
+#     except (KeyError, Answers.DoesNotExist):
+#         # Redisplay the question voting form.
+#         return render(request, 'DiagnosticSystem/start_consultation.html', {
+#             'menu': menu,
+#             'sidebar': sidebar,
+#             'title': 'Диагностика',
+#             'questions': questions,
+#             'error_message': "You didn't select a choice."
+#         })
+#     else:
+#         # p_a = PatientAnswers(answer= , patient=request.user.id, question= , answer_date=timezone.now())
+#         return render(request, 'DiagnosticSystem/consultation_result.html')
+
+
 class StartConsultation(CreateView):
     form_class = PatientAnswersForm
     template_name = 'DiagnosticSystem/start_consultation.html'
-    success_url = reverse_lazy('start_consultation')
+    success_url = reverse_lazy('vote')
 
     def get_context_data(self, *, object_list=None, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -82,16 +137,21 @@ class StartConsultation(CreateView):
         return Questions.objects.all()
 
 
-# def start_consultation(request):
-#     questions = Questions.objects.all()
-#     context = {
-#         'menu': menu,
-#         'title': 'Диагностика',
-#         'sidebar': sidebar,
-#         'questions': questions
-#     }
+# class StartConsultation(CreateView):
+#     form_class = PatientAnswersForm
+#     template_name = 'DiagnosticSystem/start_consultation.html'
+#     success_url = reverse_lazy('start_consultation')
 #
-#     return render(request, 'DiagnosticSystem/start_consultation.html', context=context)
+#     def get_context_data(self, *, object_list=None, **kwargs):
+#         context = super().get_context_data(**kwargs)
+#         context['menu'] = menu
+#         context['sidebar'] = sidebar
+#         context['title'] = 'Диагностика'
+#         context['questions'] = self.get_queryset()
+#         return context
+#
+#     def get_queryset(self):
+#         return Questions.objects.all()
 
 
 class AddDiagnostic(CreateView):

@@ -1,4 +1,5 @@
 from django.db import models
+from django.contrib.auth.models import User
 
 
 class Disease(models.Model):
@@ -54,8 +55,7 @@ class Price(models.Model):
 
 
 class Patient(models.Model):
-    surname = models.CharField(max_length=50, verbose_name='Фамилия')
-    name = models.CharField(max_length=50, verbose_name='Имя')
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
     patronymic = models.CharField(max_length=50, verbose_name='Отчество')
     birthday_date = models.DateField(verbose_name='Дата рождения')
 

@@ -126,6 +126,9 @@ class SetPriceForDiagnosticForm(forms.ModelForm):
 
 
 class PatientAnswersForm(forms.ModelForm):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
     class Meta:
         model = PatientAnswers
         fields = '__all__'
