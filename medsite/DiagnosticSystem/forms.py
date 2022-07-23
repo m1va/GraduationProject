@@ -134,6 +134,15 @@ class PatientAnswersForm(forms.ModelForm):
         fields = '__all__'
 
 
+class AddMembershipFunctionForm(forms.ModelForm):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+    class Meta:
+        model = MembershipFunction
+        fields = '__all__'
+
+
 class RegisterUserForm(UserCreationForm):
     username = forms.CharField(label='Имя пользователя', widget=forms.TextInput(attrs={'class': 'form_input'}))
     first_name = forms.CharField(label='Имя', widget=forms.TextInput(attrs={'class': 'form_input'}))

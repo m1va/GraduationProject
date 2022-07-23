@@ -88,7 +88,7 @@ class PatientAnswers(models.Model):
     answer = models.ForeignKey('Answers', on_delete=models.PROTECT, verbose_name='Ответ')
     patient = models.ForeignKey('Patient', on_delete=models.PROTECT, verbose_name='Пациент')
     question = models.ForeignKey('Questions', on_delete=models.PROTECT, verbose_name='Вопрос')
-    answer_date = models.DateTimeField(auto_now_add=True, primary_key=True, verbose_name='Дата ответа')
+    answer_date = models.DateTimeField(auto_now_add=False, verbose_name='Дата ответа')
 
 
 class DiagnosticList(models.Model):
@@ -102,11 +102,24 @@ class DiagnosticList(models.Model):
 class MembershipChart(models.Model):
     membership_id = models.BigIntegerField(primary_key=True, verbose_name='График принадлежности №')
 
+    def __str__(self):
+        return 'График принадлежности №' + str(self.membership_id)
+
 
 class MembershipFunction(models.Model):
+    LOW_CHANCE = 'LC'
+    AVERAGE_CHANCE = 'AC'
+    HIGH_CHANCE = 'HC'
+
+    MEMBERSHIP_CHART_CHOICES = [
+        (LOW_CHANCE, 'Низкая вероятность'),
+        (AVERAGE_CHANCE, 'Средняя вероятность'),
+        (HIGH_CHANCE, 'Высокая вероятность'),
+    ]
+
     membership_chart = models.ForeignKey('MembershipChart', on_delete=models.PROTECT,
                                          verbose_name='График принадлежности')
-    function_name = models.CharField(max_length=50, verbose_name='Название функции')
+    function_name = models.CharField(max_length=50, verbose_name='Название функции', choices=MEMBERSHIP_CHART_CHOICES)
     a = models.PositiveSmallIntegerField()
     b = models.PositiveSmallIntegerField()
     c = models.PositiveSmallIntegerField()

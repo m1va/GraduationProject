@@ -7,6 +7,8 @@ from django.urls import reverse_lazy
 from django.views.generic import ListView, CreateView
 from django.utils import timezone
 
+from django.db.models import Sum
+
 from .models import Questions, Answers, PatientAnswers
 
 from .forms import *
@@ -21,7 +23,8 @@ sidebar = [{'title': "Начать консультацию", 'url_name': 'start
            {'title': "Связать заболевание с диагностикой", 'url_name': 'add_disease-diagnostic'},
            {'title': "Установить цену на диагностику", 'url_name': 'set_price_for_diagnostic'},
            {'title': "Просмотреть список врачей", 'url_name': 'employees_list'},
-           {'title': "Просмотреть список диагностик", 'url_name': 'diagnostic_list'}
+           {'title': "Просмотреть список диагностик", 'url_name': 'diagnostic_list'},
+           {'title': "Добавление функций принадлежности", 'url_name': 'add_membership_chart'}
            ]
 menu = [{'title': "Главная страница", 'url_name': 'home'},
         {'title': "Диагностика", 'url_name': 'home'}
@@ -69,16 +72,13 @@ def index(request):
 
 
 def vote(request):
-    print(request.user.id)
     patient = Patient.objects.get(pk=request.user.id)
     questions = Questions.objects.all()
     selected_answers = []
-    print('кол-во вопросов: ', questions.count())
     try:
-        print(questions, 'до POST')
         for question in questions:
             selected_answers.append(question.answers_set.get(pk=request.POST['answer_for_question' + str(question.id)]))
-            print(selected_answers, 'после POST')
+        time_selected = timezone.now()
     except (KeyError, Answers.DoesNotExist):
         # Redisplay the question voting form.
         return render(request, 'DiagnosticSystem/start_consultation.html', {
@@ -90,34 +90,19 @@ def vote(request):
         })
     else:
         for answer in selected_answers:
-            print(answer.question.id)
             PatientAnswers.objects.create(answer=answer, patient=patient, question=answer.question,
-                                          answer_date=timezone.now())
+                                          answer_date=time_selected)
+        """ Подсчет коэффициентов """
+        points_for_disease = PatientAnswers.objects.select_related('answer', 'answer__disease') \
+            .values_list('answer__disease__name', 'answer__disease__membership_chart_id') \
+            .annotate(total=Sum('answer__number_of_points')) \
+            .filter(patient=patient, answer_date=time_selected)
+        # print(points_for_disease.query)
+        for p in points_for_disease:
+            print(p)
+
+            # print(p.patient.id, p.answer.title, p.answer.disease.name, p.answer.number_of_points)
         return render(request, 'DiagnosticSystem/consultation_result.html')
-
-
-# def vote(request):
-#     questions = Questions.objects.all()
-#     print('кол-во вопросов: ', questions.count())
-#     try:
-#         print(questions, 'до POST')
-#         for question in questions:
-#             # key = str('answerFORquestion№' + str(i))
-#             # print(key)
-#             selected_answer = question.answers_set.get(pk=request.POST['answer_for_question' + str(question.id)])
-#             print(selected_answer, 'после POST')
-#     except (KeyError, Answers.DoesNotExist):
-#         # Redisplay the question voting form.
-#         return render(request, 'DiagnosticSystem/start_consultation.html', {
-#             'menu': menu,
-#             'sidebar': sidebar,
-#             'title': 'Диагностика',
-#             'questions': questions,
-#             'error_message': "You didn't select a choice."
-#         })
-#     else:
-#         # p_a = PatientAnswers(answer= , patient=request.user.id, question= , answer_date=timezone.now())
-#         return render(request, 'DiagnosticSystem/consultation_result.html')
 
 
 class StartConsultation(CreateView):
@@ -328,6 +313,19 @@ class DiagnosticList(ListView):
 #
 #     return render(request, 'DiagnosticSystem/diagnostic_list.html',
 #                   {'diagnostics': Diagnostics, 'title': 'Список диагностик', 'sidebar': sidebar})
+
+
+class AddMembershipChart(CreateView):
+    form_class = AddMembershipFunctionForm
+    template_name = 'DiagnosticSystem/add_membership_chart.html'
+    success_url = reverse_lazy('add_membership_chart')
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['menu'] = menu
+        context['title'] = 'Добавление функций принадлежности'
+        context['sidebar'] = sidebar
+        return context
 
 
 class RegisterUser(CreateView):
