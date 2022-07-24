@@ -32,18 +32,33 @@ menu = [{'title': "Главная страница", 'url_name': 'home'},
 
 
 def function(x, a, b, c, d):
-    if x <= a:
-        coef = 0
-    elif a <= x <= b:
-        coef = x - a / b - a
-    elif b <= x <= c:
+    if x == a == b or x == c == d:
         coef = 1
-    elif c <= x <= d:
+        return coef
+    elif x <= a:
+        coef = 0
+        return coef
+    elif a <= x < b:
+        coef = x - a / b - a
+        return coef
+    elif b <= x < c:
+        coef = 1
+        return coef
+    elif c <= x < d:
         coef = d - x / d - c
+        return coef
     elif d <= x:
         coef = 0
+        return coef
 
-    return coef
+
+def coef_convert_to_user_friendly(coef_list):
+    if coef_list[0] > coef_list[1]:
+        return "Низкая вероятность"
+    elif coef_list[1] > coef_list[2]:
+        return "Средняя вероятность"
+    else:
+        return "Высокая вероятность"
 
 
 # def result(request):
@@ -94,15 +109,32 @@ def vote(request):
                                           answer_date=time_selected)
         """ Подсчет коэффициентов """
         points_for_disease = PatientAnswers.objects.select_related('answer', 'answer__disease') \
-            .values_list('answer__disease__name', 'answer__disease__membership_chart_id') \
+            .values_list('answer__disease__id', 'answer__disease__name', 'answer__disease__membership_chart_id') \
             .annotate(total=Sum('answer__number_of_points')) \
             .filter(patient=patient, answer_date=time_selected)
         # print(points_for_disease.query)
+        print(points_for_disease)
+        possible_diseases_list = []
         for p in points_for_disease:
-            print(p)
+            membership_functions = MembershipFunction.objects.values_list('function_name', 'a', 'b', 'c', 'd') \
+                .filter(membership_chart=p[2])  # p[2] == membership_chart_id
+            coef_list = []
+            for m_f in membership_functions:
+                coef = function(p[3], m_f[1], m_f[2], m_f[3], m_f[4])
+                coef_list.append(coef)
+                # print('p[3]', p[3], 'm_f[1]', m_f[1], 'm_f[2]', m_f[2], 'm_f[3]', m_f[3], 'm_f[4]', m_f[4])
+            print(coef_list)
+            probability = coef_convert_to_user_friendly(coef_list)
+            possible_disease = {'disease_name': p[1], 'probability': probability}
+            possible_diseases_list.append(possible_disease)
+
+            print(possible_diseases_list)
+            # print(membership_functions)
+            # print(membership_functions[0])
 
             # print(p.patient.id, p.answer.title, p.answer.disease.name, p.answer.number_of_points)
-        return render(request, 'DiagnosticSystem/consultation_result.html')
+        return render(request, 'DiagnosticSystem/consultation_result.html',
+                      {'possible_diseases_list': possible_diseases_list})
 
 
 class StartConsultation(CreateView):
