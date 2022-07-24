@@ -4,29 +4,9 @@
 <h1>{{ title }}</h1>
     <p> По результатам диагностики выявлено:
         <ul>
-            <li>Высокое наличие признаков пневмнонии</li>
-            <li>Наличие признаков ОРВИ</li>
+            {% for p_d in possible_diseases_list %}
+                <li> {{ p_d.disease_name }} - {{ p_d.probability}}</li>
+            {% endfor %}
         </ul>
     </p>
-
-    <p>Перед приемом врача Вам необходимо:
-        <ul>
-            <li>Рентген легких, Кабинет №5, Врач-рентгенолог Василевский В.А.</li>
-            <li>Общий анализ крови, Кабинет №3, Врач-лаборант Новиков С.В. </li>
-        </ul>
-    </p>
-
-<form action="{% url 'consultation_result' %}" method="post">
-<!--    {% for question in questions %}-->
-<!--    <h3>{{ question }}</h3>-->
-<!--    {% for answer in question.answers_set.all %}-->
-<!--&lt;!&ndash;    <div class="myradio">&ndash;&gt;-->
-<!--&lt;!&ndash;    <div class="myradio">&ndash;&gt;-->
-<!--    <input type="radio" name="answerON{{ question }}" id="answerON{{ question }}{{ forloop.counter }}" value="{{ answer.id }}">-->
-<!--    {{ answer.title }} <label for="answerON{{ question }}{{ forloop.counter }}"></label><br>-->
-
-<!--    </div>-->
-<!--    {% endfor %}-->
-<!--    {% endfor %}-->
-    <button type="submit">Завершить</button> <button type="submit">Сохранить результат</button>
 {% endblock %}
