@@ -8,7 +8,7 @@ from django.contrib import messages
 
 import re
 
-regex = "^[а-яА-ЯёЁ-]+$"
+regex = "^[ а-яА-ЯёЁ-]+$"
 
 
 class AddDiagnosticForm(forms.ModelForm):

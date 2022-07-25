@@ -39,13 +39,13 @@ def function(x, a, b, c, d):
         coef = 0
         return coef
     elif a <= x < b:
-        coef = x - a / b - a
+        coef = (x - a) / (b - a)
         return coef
     elif b <= x < c:
         coef = 1
         return coef
     elif c <= x < d:
-        coef = d - x / d - c
+        coef = (d - x) / (d - c)
         return coef
     elif d <= x:
         coef = 0
@@ -104,10 +104,11 @@ def vote(request):
             'error_message': "You didn't select a choice."
         })
     else:
+        " Сохранение выбранных ответов в базу данных "
         for answer in selected_answers:
             PatientAnswers.objects.create(answer=answer, patient=patient, question=answer.question,
                                           answer_date=time_selected)
-        """ Подсчет коэффициентов """
+        " Подсчет кол-ва баллов в пользу каждого вероятного заболевания "
         points_for_disease = PatientAnswers.objects.select_related('answer', 'answer__disease') \
             .values_list('answer__disease__id', 'answer__disease__name', 'answer__disease__membership_chart_id') \
             .annotate(total=Sum('answer__number_of_points')) \
@@ -115,10 +116,14 @@ def vote(request):
         # print(points_for_disease.query)
         print(points_for_disease)
         possible_diseases_list = []
+        diagnostic_list = []
+        " Для каждого вероятного заболевания нахождение функций принадлежности "
         for p in points_for_disease:
             membership_functions = MembershipFunction.objects.values_list('function_name', 'a', 'b', 'c', 'd') \
                 .filter(membership_chart=p[2])  # p[2] == membership_chart_id
+            # print(membership_functions)
             coef_list = []
+            " Подсчет коэффициентов для низкой, средней и высокой вероятности заболевания "
             for m_f in membership_functions:
                 coef = function(p[3], m_f[1], m_f[2], m_f[3], m_f[4])
                 coef_list.append(coef)
@@ -127,14 +132,29 @@ def vote(request):
             probability = coef_convert_to_user_friendly(coef_list)
             possible_disease = {'disease_name': p[1], 'probability': probability}
             possible_diseases_list.append(possible_disease)
+            " Поиск диагностик для заболевания "
+            diagnostic = DiseaseDiagnostics.objects.select_related('diagnostic')\
+                .values_list('diagnostic__name', flat=True)\
+                .filter(disease=p[0])
+            diagnostic_list.append(diagnostic[0])
 
+            # diagnostic_info = Price.objects.select_related('employee', 'employee__speciality', 'employee__cabinet') \
+            #     .values_list('employee__name', 'employee__speciality__title', 'employee__cabinet') \
+            #     .filter(disease=diagnostic[0])
+            # print(diagnostic_info)
+            # print(diagnostic)
+            # print(diagnostic_list)
             print(possible_diseases_list)
             # print(membership_functions)
             # print(membership_functions[0])
 
             # print(p.patient.id, p.answer.title, p.answer.disease.name, p.answer.number_of_points)
-        return render(request, 'DiagnosticSystem/consultation_result.html',
-                      {'possible_diseases_list': possible_diseases_list})
+        return render(request, 'DiagnosticSystem/consultation_result.html', {
+            'possible_diseases_list': possible_diseases_list,
+            'diagnostic_list': diagnostic_list,
+            'menu': menu,
+            'sidebar': sidebar
+        })
 
 
 class StartConsultation(CreateView):
@@ -294,7 +314,7 @@ class AddSpeciality(CreateView):
 class SetPriceForDiagnostic(CreateView):
     form_class = SetPriceForDiagnosticForm
     template_name = 'DiagnosticSystem/set_price_for_diagnostic.html'
-    success_url = reverse_lazy('set_price_for_diagnostic.html')
+    success_url = reverse_lazy('set_price_for_diagnostic')
 
     def get_context_data(self, *, object_list=None, **kwargs):
         context = super().get_context_data(**kwargs)

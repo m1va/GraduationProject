@@ -9,4 +9,12 @@
             {% endfor %}
         </ul>
     </p>
+
+    <p> Перед приемом терапевта Вам необходимо:
+        <ul>
+            {% for diagnostic in diagnostic_list %}
+                <li> {{ diagnostic }} </li>
+            {% endfor %}
+        </ul>
+    </p>
 {% endblock %}
