@@ -116,7 +116,7 @@ def vote(request):
         # print(points_for_disease.query)
         print(points_for_disease)
         possible_diseases_list = []
-        diagnostic_list = []
+        diagnostic_info_list = []
         " Для каждого вероятного заболевания нахождение функций принадлежности "
         for p in points_for_disease:
             membership_functions = MembershipFunction.objects.values_list('function_name', 'a', 'b', 'c', 'd') \
@@ -131,27 +131,40 @@ def vote(request):
             print(coef_list)
             probability = coef_convert_to_user_friendly(coef_list)
             possible_disease = {'disease_name': p[1], 'probability': probability}
+            print(possible_disease)
             possible_diseases_list.append(possible_disease)
             " Поиск диагностик для заболевания "
-            diagnostic = DiseaseDiagnostics.objects.select_related('diagnostic')\
-                .values_list('diagnostic__name', flat=True)\
+            diagnostic = DiseaseDiagnostics.objects.select_related('diagnostic') \
+                .values_list('id', 'diagnostic__name') \
                 .filter(disease=p[0])
-            diagnostic_list.append(diagnostic[0])
-
-            # diagnostic_info = Price.objects.select_related('employee', 'employee__speciality', 'employee__cabinet') \
-            #     .values_list('employee__name', 'employee__speciality__title', 'employee__cabinet') \
-            #     .filter(disease=diagnostic[0])
+            " Поиск врача, кабинета и специальности врача для каждой диагностики"
+            for d in diagnostic:
+                diagnostic_info_queryset = Price.objects.select_related('employee', 'employee__speciality',
+                                                                        'employee__cabinet') \
+                    .values_list('employee__name', 'employee__surname', 'employee__patronymic',
+                                 'employee__speciality__title', 'employee__cabinet') \
+                    .filter(diagnostic=d[0])
+                # print(diagnostic_info_queryset)
+                diagnostic_info = {'diagnostic_name': d[1],
+                                   'employee_name': diagnostic_info_queryset[0][0],
+                                   'employee_surname': diagnostic_info_queryset[0][1],
+                                   'employee_patronymic': diagnostic_info_queryset[0][2],
+                                   'employee_speciality': diagnostic_info_queryset[0][3],
+                                   'employee_cabinet': diagnostic_info_queryset[0][4]}
+                diagnostic_info_list.append(diagnostic_info)
+            # print(diagnostic_info_list)
             # print(diagnostic_info)
             # print(diagnostic)
             # print(diagnostic_list)
-            print(possible_diseases_list)
+
+            # print(possible_diseases_list)
+
             # print(membership_functions)
             # print(membership_functions[0])
 
-            # print(p.patient.id, p.answer.title, p.answer.disease.name, p.answer.number_of_points)
         return render(request, 'DiagnosticSystem/consultation_result.html', {
             'possible_diseases_list': possible_diseases_list,
-            'diagnostic_list': diagnostic_list,
+            'diagnostic_info_list': diagnostic_info_list,
             'menu': menu,
             'sidebar': sidebar
         })

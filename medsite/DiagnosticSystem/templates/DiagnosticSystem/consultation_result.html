@@ -12,8 +12,10 @@
 
     <p> Перед приемом терапевта Вам необходимо:
         <ul>
-            {% for diagnostic in diagnostic_list %}
-                <li> {{ diagnostic }} </li>
+            {% for d_info in diagnostic_info_list %}
+                <li> {{ d_info.diagnostic_name }}, кабинет №{{ d_info.employee_cabinet}},
+                    врач-{{ d_info.employee_speciality }}:
+                    {{ d_info.employee_surname }} {{ d_info.employee_name }} {{ d_info.employee_patronymic }} </li>
             {% endfor %}
         </ul>
     </p>
